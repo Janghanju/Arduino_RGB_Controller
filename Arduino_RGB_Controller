@@ -1,0 +1,44 @@
+int redPin = 16;
+int greenPin = 17;
+int bluePin = 18;
+
+void setup() {
+  // 핀을 출력으로 설정
+  pinMode(redPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
+  
+  // 시리얼 통신 시작
+  Serial.begin(115200);
+}
+
+void loop() {
+  // 시리얼 데이터가 들어오는지 확인
+  if (Serial.available() > 0) {
+    // 데이터를 읽어들임
+    String input = Serial.readStringUntil('\n');
+    
+    // 입력된 데이터가 "R,G,B" 형식인지 확인
+    if (input.indexOf(',') > 0) {
+      int commaIndex1 = input.indexOf(',');
+      int commaIndex2 = input.lastIndexOf(',');
+
+      int redValue = input.substring(0, commaIndex1).toInt();
+      int greenValue = input.substring(commaIndex1 + 1, commaIndex2).toInt();
+      int blueValue = input.substring(commaIndex2 + 1).toInt();
+
+      // PWM을 통해 각 LED 핀에 값 적용
+      analogWrite(redPin, redValue);
+      analogWrite(greenPin, greenValue);
+      analogWrite(bluePin, blueValue);
+
+      // 현재 색상 값을 시리얼 모니터에 출력
+      Serial.print("Set color to: R=");
+      Serial.print(redValue);
+      Serial.print(", G=");
+      Serial.print(greenValue);
+      Serial.print(", B=");
+      Serial.println(blueValue);
+    }
+  }
+}
